@@ -1,0 +1,16 @@
+[
+{
+  "modid": "adventurenote",
+  "name": "AdventureNote",
+  "description": "Memories of Adventure.",
+  "version": "1.0.0",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["RiceBallSouls"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
