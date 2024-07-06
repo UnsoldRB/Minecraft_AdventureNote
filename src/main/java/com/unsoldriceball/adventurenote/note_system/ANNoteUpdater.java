@@ -42,6 +42,7 @@ public class ANNoteUpdater
         final ArrayList<String> _DATA_BOSS_ENTITY = ANJsonEditor.getValue_Json(UUID_PLAYER, EnumANNoteType.BOSSES.name());
         final ArrayList<String> _DATA_BIOME = ANJsonEditor.getValue_Json(UUID_PLAYER, EnumANNoteType.BIOMES.name());
         final ArrayList<String> _DATA_DIMENSION = ANJsonEditor.getValue_Json(UUID_PLAYER, EnumANNoteType.DIMENSIONS.name());
+
         note_progress.put(EnumANNoteType.MOBS, _DATA_NORMAL_ENTITY.size());
         note_progress.put(EnumANNoteType.BOSSES, _DATA_BOSS_ENTITY.size());
         note_progress.put(EnumANNoteType.BIOMES, _DATA_BIOME.size());

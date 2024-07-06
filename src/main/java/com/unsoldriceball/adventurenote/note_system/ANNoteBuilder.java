@@ -11,6 +11,8 @@ import net.minecraft.nbt.NBTTagString;
 import java.util.*;
 
 
+
+
 public class ANNoteBuilder
 {
     private static final String SECTION = "\u00A7";
@@ -25,8 +27,9 @@ public class ANNoteBuilder
     private static final String STRING_NEWLINE = "\n";
     private static final String STRING_SPLITTER = "/";
     private static final String STRING_PERCENTAGE = "%";
+    private static final String TEMPSTRING_JUMPPAGE_NUM = "%JUMPPAGE_NUMBER%";  //AdventureNote内で、文字のクリック時のページの移動先を設定するために、一時的に設置される文字列。最終的に数値で置き換えられる。また、mod名とセットで使用される。
     private static final int MAXLINE_INPAGE = 14;
-    private static final int PAGE_CONTENTS_TABLE = 2;     //目次のページ。
+    private static final int FIRSTPAGE_CONTENTS_TABLE = 2;     //目次の最初のページ。
 
 
 
@@ -100,7 +103,7 @@ public class ANNoteBuilder
 
         StringBuilder _str_builder = new StringBuilder();
         int _line_now = 1;
-        String _modname_now = "";
+        String _name_mod_nowtarget = "";
 
         //ANDataCollector.f_registered_datas.get(type)内の全のKeyをループする。ここにはclassのcanonicalNameか、DimensionIDが格納されている。
         for (Integer __hash : _DATA_REGISTRY_KEYS)
@@ -108,7 +111,7 @@ public class ANNoteBuilder
             //現在作業している行が、1ページの最大行数を超えていた場合(ページを追加する。)。
             if (_line_now > MAXLINE_INPAGE)
             {
-                _CONTENTS.add(convertContentsPage_toJson(_str_builder, _TEMPTEXT_SPLIT_MODNAME_AND_ELEMENTS));
+                _CONTENTS.add(convertContentsPage_toJson(_str_builder, _name_mod_nowtarget, _TEMPTEXT_SPLIT_MODNAME_AND_ELEMENTS));
                 _str_builder = new StringBuilder();
                 _line_now = 1;
             }
@@ -117,8 +120,9 @@ public class ANNoteBuilder
             String __name_mod_thisloop = dataName_To_DisplayName(getModName_FromID(_DATA_REGISTRY.get(__hash)), true, _TEMPTEXT_LEACH_LENCAP);
             if (__name_mod_thisloop.endsWith(_TEMPTEXT_LEACH_LENCAP))    //configで設定されており、文字数制限に達している印が含まれている場合。
             {
+                //このifが成立する場合、改行が発生するが、
+                //mod名の下は常に1行空いているので_line_now++は行わなくても見た目上問題ない。(この文字数制限処理自体が見た目のための処理なのでこれで良い。)
                 __name_mod_thisloop = __name_mod_thisloop.replace(_TEMPTEXT_LEACH_LENCAP, "");
-                _line_now++;
             }
 
             //mod名が存在した場合。
@@ -126,18 +130,18 @@ public class ANNoteBuilder
             {
                 //一番初めのループだった場合。あるいは、
                 //「現在の__sのmodと、ひとつ前の__sのmod」が一致していない場合。(あるいはひとつ前の__sのmodが存在しない。)
-                if (_modname_now.isEmpty() || !__name_mod_thisloop.equals(_modname_now))
+                if (_name_mod_nowtarget.isEmpty() || !__name_mod_thisloop.equals(_name_mod_nowtarget))
                 {
                     //「作業している行が1行目でない」場合。(要はそのmodの要素が、MAXLINE_INPAGEとぴったりではない行の段階でなくなった場合。)
                     if (_line_now != 1)
                     {
-                        _CONTENTS.add(convertContentsPage_toJson(_str_builder, _TEMPTEXT_SPLIT_MODNAME_AND_ELEMENTS));
+                        _CONTENTS.add(convertContentsPage_toJson(_str_builder, _name_mod_nowtarget, _TEMPTEXT_SPLIT_MODNAME_AND_ELEMENTS));
                         _str_builder = new StringBuilder();
                         _line_now = 1;
                     }
 
                     //作業の対象となるmodを新しいmodに切り替える。
-                    _modname_now = __name_mod_thisloop;
+                    _name_mod_nowtarget = __name_mod_thisloop;
 
                     int[] __mods_data = new int[_MODS_ARRAYSIZE];
                     __mods_data[_MODS_INDEX_FIRSTPAGE] = _CONTENTS.size() + 1;       //_CONTENTS.size()の開始は0から。ページ数は1から開始したいので+1をする。
@@ -154,11 +158,11 @@ public class ANNoteBuilder
                     _str_builder.append(_DOUBLE_NEW_LINE);
                     _line_now += 2;
                 }
-                _MODS.get(_modname_now)[_MODS_INDEX_ELEMENTS_AMOUNT]++;
+                _MODS.get(_name_mod_nowtarget)[_MODS_INDEX_ELEMENTS_AMOUNT]++;
                 //プレイヤーが__sをアンロック済みだった場合(個数を数えておく。)。
                 if (_DATA_PLAYER.contains(__hash))
                 {
-                    _MODS.get(_modname_now)[_MODS_INDEX_UNLOCKEDELEMENTS_AMOUNT]++;
+                    _MODS.get(_name_mod_nowtarget)[_MODS_INDEX_UNLOCKEDELEMENTS_AMOUNT]++;
                 }
             }
             //プレイヤーが__sをアンロック済みだった場合とそうでない場合(文字を装飾する。)。
@@ -175,6 +179,7 @@ public class ANNoteBuilder
             if (__name_element.contains(_TEMPTEXT_LEACH_LENCAP))    //configで設定されており、文字数制限に達している印が含まれている場合。
             {
                 __name_element = __name_element.replace(_TEMPTEXT_LEACH_LENCAP, "");
+                //このifが成立する場合は、改行が発生するので、作業している行を1つ進めることで、このループの要素に対して計2行を割り当てる。
                 _line_now++;
             }
             //configで隠すように設定されている場合は、解除していない要素名を隠す。
@@ -188,7 +193,7 @@ public class ANNoteBuilder
             //最後のループだった場合は、MAXLINE_INPAGEまで行が達していなくてもその時点でページとして配列に追加する。
             if (_DATA_REGISTRY_KEYS.get(_DATA_REGISTRY_KEYS.size() - 1).equals(__hash))
             {
-                _CONTENTS.add(convertContentsPage_toJson(_str_builder, _TEMPTEXT_SPLIT_MODNAME_AND_ELEMENTS));
+                _CONTENTS.add(convertContentsPage_toJson(_str_builder, _name_mod_nowtarget, _TEMPTEXT_SPLIT_MODNAME_AND_ELEMENTS));
                 //ここでforの処理終了。
             }
             else
@@ -204,11 +209,16 @@ public class ANNoteBuilder
             _FIRSTPAGE.addAll(_CONTENTS);
             return _FIRSTPAGE;
         }
-        //_TEMPTEXT_PAGEを置換してく。
         else
         {
+            //目次と最初のページを作成。目次は、indexの0に各modが何ページ目なのかを記録したList、1に実際の目次データを格納している。
+            final List<String> _FIRSTPAGE = buildFirstPage(type, _DATA_REGISTRY.size(), _DATA_PLAYER.size());
+            final ArrayList<ArrayList<String>> _CONTENT_TABLE =  buildContentsTable(_MODS, _MODS_INDEX_FIRSTPAGE, _MODS_INDEX_ELEMENTS_AMOUNT, _MODS_INDEX_UNLOCKEDELEMENTS_AMOUNT);
+
+            //_TEMPTEXT_PAGEと、_TEMPTEXT_JUMPPAGE_NUMを置換してく。
             final List<String> _FINALLY_CONTENTS = new ArrayList<>();
             final List<String> _NAMES_MOD = new ArrayList<>(_MODS.keySet());    //各modの名前が格納されている。
+            final List<String> _MODSPOS_IN_CONTENTSTABLE = new ArrayList<>(_CONTENT_TABLE.get(0));  //何ページ目に各modの目次があるか。_NAMES_MODとindexが対応。
             final Map<String, Integer> _MOD_PAGE_AMOUNT = new LinkedHashMap<>();      //各modの最大ページ数が格納される。
             final String _TEMPTEXT_MAXPAGE = "%MAXPAGE%";
 
@@ -228,11 +238,20 @@ public class ANNoteBuilder
                     _modname_now2 = _NAMES_MOD.get(_mod_count);
                     _key_mod_pageamount = _TEMPTEXT_MAXPAGE + _modname_now2 + _TEMPTEXT_MAXPAGE;
                 }
+                //_TEMPTEXT_PAGE用の処理。
                 _str_builder2.append(_mod_page_count);
                 _str_builder2.append(STRING_SPLITTER);
                 _str_builder2.append(_key_mod_pageamount);
 
-                _FINALLY_CONTENTS.add(__s.replace(_TEMPTEXT_PAGE, _str_builder2));
+                //_TEMPTEXT_JUMPPAGE_NUM用の処理。
+                //目次の何ページ目に_modname_now2があるのか調べる。
+                final String __MODPOS_IN_CONTENTSTABLE = _MODSPOS_IN_CONTENTSTABLE.get(_mod_count);
+
+                //置換していく。
+                String __replaced_string = __s.replace(_TEMPTEXT_PAGE, _str_builder2);
+                __replaced_string = __replaced_string.replace(TEMPSTRING_JUMPPAGE_NUM + _modname_now2, __MODPOS_IN_CONTENTSTABLE);
+
+                _FINALLY_CONTENTS.add(__replaced_string);
 
                 _str_builder2 = new StringBuilder();
                 _mod_page_count++;
@@ -262,10 +281,8 @@ public class ANNoteBuilder
             }
 
             //最初のページ、目次、メインページを結合していく。
-            final List<String> _CONTENT_TABLE =  buildContentsTable(_MODS, _MODS_INDEX_FIRSTPAGE, _MODS_INDEX_ELEMENTS_AMOUNT, _MODS_INDEX_UNLOCKEDELEMENTS_AMOUNT);
-            final List<String> _FIRSTPAGE = buildFirstPage(type, _DATA_REGISTRY.size(), _DATA_PLAYER.size());
-            _CONTENT_TABLE.addAll(_FINALLY_CONTENTS);
-            _FIRSTPAGE.addAll(_CONTENT_TABLE);
+            _CONTENT_TABLE.get(1).addAll(_FINALLY_CONTENTS);
+            _FIRSTPAGE.addAll(_CONTENT_TABLE.get(1));
 
             return _FIRSTPAGE;
         }
@@ -274,13 +291,15 @@ public class ANNoteBuilder
 
 
     //目次を作成する関数。
-    private static List<String> buildContentsTable(Map<String, int[]> mods, int mods_index_firstpage, int mods_index_elementsamount, int mods_index_unlockedelementsamount)
+    //戻り値のindex0に_MOD_POS, 1に_RESULTが入る。
+    private static ArrayList<ArrayList<String>> buildContentsTable(Map<String, int[]> mods, int mods_index_firstpage, int mods_index_elementsamount, int mods_index_unlockedelementsamount)
     {
         final String _STRING_PREFIX_PROGRESS = "(";
         final String _STRING_SUFFIX_PROGRESS = ")";
         final ArrayList<String> _NAMES_MOD = new ArrayList<>(mods.keySet());
 
-        final List<String> _RESULT = new ArrayList<>();
+        final ArrayList<String> _MOD_POS = new ArrayList<>(); //各modの目次が何ページ目にあるかを記録する。indexを_NAMES_MODと対応させる。
+        final ArrayList<String> _RESULT = new ArrayList<>();
         StringBuilder _str_builder = new StringBuilder();
         StringBuilder _str_builder_perline = new StringBuilder();
         int _line_now = 1;
@@ -319,10 +338,11 @@ public class ANNoteBuilder
             }
             _str_builder_perline.append(_STRING_SUFFIX_PROGRESS);
 
-            //クリックでmodの最初のページに飛べるようにする。
-            //_RESULT.size()の開始は0からなので+1、また、Noteには最初のページが存在するので+1。
-            final int __MODPAGE = mods.get(__s)[mods_index_firstpage] + _RESULT.size() + 1 + 1;
-            _str_builder_perline = new StringBuilder(toJson_BookText(String.valueOf(_str_builder_perline), __MODPAGE));
+            //クリックでmodの最初のページに飛べるようにするために、後で置換するための文字列(_TEMP_JUMPPAGE_NUM+mod名)を一旦入れておく。
+            _str_builder_perline = new StringBuilder(toJson_BookText(String.valueOf(_str_builder_perline), TEMPSTRING_JUMPPAGE_NUM + __s));
+
+            //メインページから飛んでこれるようにするため(_TEMP_JUMPPAGE_NUMを置換するため)に、このmodが何ページ目かを記録する。
+            _MOD_POS.add(String.valueOf(FIRSTPAGE_CONTENTS_TABLE + _RESULT.size()));
 
             //最後のループだった場合。
             if (_NAMES_MOD.get(_NAMES_MOD.size() - 1).equals(__s))
@@ -330,6 +350,7 @@ public class ANNoteBuilder
                 _str_builder.append(_str_builder_perline);
                 _RESULT.add("[" + _str_builder + "]");
             }
+            //そうでなかった場合は、作業する行を1つ進め、ページの最大行数に達した場合はページを追加する。
             else
             {
                 _line_now++;
@@ -348,7 +369,30 @@ public class ANNoteBuilder
                 }
             }
         }
-        return _RESULT;
+
+        final int _RESULT_SIZE = _RESULT.size();    //目次の総ページ数。
+
+        //_TEMP_JUMPPAGE_NUMを置換していく。
+        for (String __s2 : _NAMES_MOD)
+        {
+            final String __TARGET = TEMPSTRING_JUMPPAGE_NUM + __s2;
+
+            int __i = 0;    //下の処理で、_RESULTのループ回数が入る。
+            for (String ___result : _RESULT)
+            {
+                if (___result.contains(__TARGET))
+                {
+                    final String __MODPAGE = String.valueOf(mods.get(__s2)[mods_index_firstpage] + _RESULT_SIZE + 1);  //AdventureNoteには最初のページが存在するので+1。
+                    _RESULT.set(__i, ___result.replace(__TARGET, __MODPAGE));
+                    break;
+                }
+                __i++;
+            }
+        }
+        final ArrayList<ArrayList<String>> _RESULT2 = new ArrayList<>();
+        _RESULT2.add(_MOD_POS);
+        _RESULT2.add(_RESULT);
+        return _RESULT2;
     }
 
 
@@ -407,14 +451,14 @@ public class ANNoteBuilder
 
 
 
-    private static String toJson_BookText(String s, Integer change_page)
+    private static String toJson_BookText(String s, String change_page)
     {
         final StringBuilder _STR_BUILDER = new StringBuilder();
         _STR_BUILDER.append("{\"text\":\"");
         _STR_BUILDER.append(s);
         _STR_BUILDER.append("\"");
         //change_pageが設定されている場合は、クリック時に指定のページに飛ばすようにする。(nullで無効。)
-        if (change_page != null && change_page >= 1)
+        if (change_page != null)
         {
             _STR_BUILDER.insert(0, "\"\",");    //なぜかこの文字列が必要。Minecraftが、jsonの配列の開始を認識できるようになるとかならないとか。
             _STR_BUILDER.append(",\"clickEvent\":{\"action\":\"change_page\",\"value\":");
@@ -438,18 +482,20 @@ public class ANNoteBuilder
 
 
     //_CONTENTSに追加する予定のStringBuilderを、必要に応じてmod名をクリックで目次に飛べるようにした上で、Json化する関数。
-    private static String convertContentsPage_toJson(StringBuilder target, String temptext_split)
+    //実際にクリックで飛べるようになるのはtemptext_jumppage_numを後々の処理で置換してから。
+    private static String convertContentsPage_toJson(StringBuilder target, String modname, String temptext_split)
     {
         final String _TARGET = String.valueOf(target);
+
         //mod名が含まれているかどうか(dimensionなどの場合は含まれない。)
-        if (!_TARGET.contains(temptext_split))
+        if (modname.isEmpty())
         {
             return toJson_BookText(_TARGET, null);
         }
         else
         {
             final String[] _TARGET_SPLITTED = _TARGET.split(temptext_split);
-            final String _MODNAME = toJson_BookText(_TARGET_SPLITTED[0], PAGE_CONTENTS_TABLE);
+            final String _MODNAME = toJson_BookText(_TARGET_SPLITTED[0], TEMPSTRING_JUMPPAGE_NUM + modname);
             final String _ELEMENTS = toJson_BookText(_TARGET_SPLITTED[1], null);
 
             return "[" + _MODNAME + "," + _ELEMENTS + "]"; //","でJsonの{}同士を繋ぐ。

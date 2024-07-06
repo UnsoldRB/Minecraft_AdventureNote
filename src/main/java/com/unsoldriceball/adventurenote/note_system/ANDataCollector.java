@@ -21,9 +21,9 @@ public class ANDataCollector
     public static final Map<EnumANNoteType, Map<Integer, String>> f_registered_datas = new HashMap<>();
     public static Map<Integer, String> f_entities_name = new HashMap<>();
     public static Map<Integer, Biome> f_biomes_instance = new HashMap<>();
-    private static List<String> f_ignore_entities = new ArrayList<>();
-    private static List<String> f_ignore_biomes = new ArrayList<>();
-    private static List<Integer> f_ignore_dimensions = new ArrayList<>();
+    public static List<String> f_ignore_entities = new ArrayList<>();
+    public static List<String> f_ignore_biomes = new ArrayList<>();
+    public static List<Integer> f_ignore_dimensions = new ArrayList<>();
 
 
 
@@ -154,7 +154,7 @@ public class ANDataCollector
 
 
     //configで設定されている場合に、対象を無視するべきかどうかを名前で判断するための関数。
-    private boolean isIgnoreElement(Object o)
+    public boolean isIgnoreElement(Object o)
     {
         final String _CLASS_NAME;
 

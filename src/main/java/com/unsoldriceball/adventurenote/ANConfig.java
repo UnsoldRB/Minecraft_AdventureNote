@@ -68,14 +68,14 @@ public class ANConfig
 
     public static class Ignores
     {
-        @Config.Comment("If set to true, this mod will ignore any elements that include the text of debug in the canonical class name.")
+        @Config.Comment("If set to true, this mod will ignore any elements that include the text of debug in the canonical class name. If you already unlocked the elements related to this setting, you must remove it from adventurenote_data.json.")
         public boolean ignore_debug_element = true;
-        @Config.Comment("If set to true, this mod will ignore any elements that include the text of test in the canonical class name.(Recommend to false. Because also ignores for example greatest....)")
+        @Config.Comment("If set to true, this mod will ignore any elements that include the text of test in the canonical class name.(Recommend to false. Because also ignores for example greatest....) If you already unlocked the elements related to this setting, you must remove it from adventurenote_data.json.")
         public boolean ignore_test_element = false;
-        @Config.Comment("If set to true, this mod will ignore any elements that include the text of temp in the canonical class name.")
+        @Config.Comment("If set to true, this mod will ignore any elements that include the text of temp in the canonical class name. If you already unlocked the elements related to this setting, you must remove it from adventurenote_data.json.")
         public boolean ignore_temp_element = true;
         @Config.RequiresMcRestart
-        @Config.Comment("If listed name here, this mod will ignore that.")
+        @Config.Comment("If listed name here, this mod will ignore that. If you already unlocked the elements related to this setting, you must remove it from adventurenote_data.json.")
         public String[] ignoreEntityList =
                 {
                         "minecraft:armor_stand",
@@ -86,13 +86,13 @@ public class ANConfig
 
                 };
         @Config.RequiresMcRestart
-        @Config.Comment("If listed name here, this mod will ignore that.")
+        @Config.Comment("If listed name here, this mod will ignore that. If you already unlocked the elements related to this setting, you must remove it from adventurenote_data.json.")
         public String[] ignoreBiomeList =
                 {
 
                 };
         @Config.RequiresMcRestart
-        @Config.Comment("If listed name here, this mod will ignore that.")
+        @Config.Comment("If listed name here, this mod will ignore that. If you already unlocked the elements related to this setting, you must remove it from adventurenote_data.json.")
         public Integer[] ignoreDimensionIDList =
                 {
 
