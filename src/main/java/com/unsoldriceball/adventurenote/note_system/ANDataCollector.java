@@ -102,7 +102,7 @@ public class ANDataCollector
                         f_entities_name.put(__HASH_ELB, __NAME_ELB);
                     }
                 }
-                catch (NullPointerException exc)
+                catch (Exception exc)
                 {
                     if (__E != null)
                     {
