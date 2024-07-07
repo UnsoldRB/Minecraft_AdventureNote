@@ -1,5 +1,7 @@
-”­Œ©‚µ‚½/–¢”­Œ©‚ÌƒfƒBƒƒ“ƒVƒ‡ƒ“AƒoƒCƒI[ƒ€‚ÆA
-ˆê‰ñˆÈã“|‚µ‚½/ˆê“x‚à“|‚µ‚Ä‚¢‚È‚¢Entity‚ðƒŠƒXƒgƒAƒbƒv‚·‚é’˜–¼Ï‚Ý‚Ì–{‚ðì¬‚·‚émodB
+ç™ºè¦‹ã—ãŸ/æœªç™ºè¦‹ã®ãƒ‡ã‚£ãƒ¡ãƒ³ã‚·ãƒ§ãƒ³ã€ãƒã‚¤ã‚ªãƒ¼ãƒ ã¨ã€
+ä¸€å›žä»¥ä¸Šå€’ã—ãŸ/ä¸€åº¦ã‚‚å€’ã—ã¦ã„ãªã„Entityã‚’ãƒªã‚¹ãƒˆã‚¢ãƒƒãƒ—ã™ã‚‹è‘—åæ¸ˆã¿ã®æœ¬ã‚’ä½œæˆã™ã‚‹modã€‚
 
-“r’†‚Åì‚é‚Ì‚ªŒ™‚É‚È‚Á‚½‚Ì‚ÅƒR[ƒh‚ª‚²‚è‰Ÿ‚µ‹C–¡B
-‚½‚Ô‚ñ‚à‚Á‚ÆŒ«‚­‘‚±‚¤‚ÆŽv‚¦‚Î‘‚¯‚éB
+é€”ä¸­ã§ä½œã‚‹ã®ãŒå«Œã«ãªã£ãŸã®ã§ã‚³ãƒ¼ãƒ‰ãŒã”ã‚ŠæŠ¼ã—æ°—å‘³ã€‚
+ãŸã¶ã‚“ã‚‚ã£ã¨è³¢ãæ›¸ã“ã†ã¨æ€ãˆã°æ›¸ã‘ã‚‹ã€‚
+
+https://www.curseforge.com/minecraft/mc-mods/adventure-note
